@@ -7,40 +7,41 @@ import CardContent from "@material-ui/core/CardContent";
 import CardMedia from "@material-ui/core/CardMedia";
 import Button from "@material-ui/core/Button";
 import Countdown from "react-countdown";
-import { Grid, CardHeader, Avatar } from '@material-ui/core';
-import styled from 'styled-components';
+import { Grid, CardHeader, Avatar } from "@material-ui/core";
+import styled from "styled-components";
 
 const useStyles = makeStyles({
   root: {
-    width: '100%'
+    width: "100%",
   },
   media: {
     height: 280,
   },
   bidButton: {
-    width: '70%',
-    background: 'linear-gradient(90deg, rgba(190,52,32,1) 0%, rgba(231,75,77,1) 48%, rgba(231,148,74,1) 100%)',
+    width: "70%",
+    background:
+      "linear-gradient(90deg, rgba(190,52,32,1) 0%, rgba(231,75,77,1) 48%, rgba(231,148,74,1) 100%)",
     borderWidth: 0,
-    color: 'white',
+    color: "white",
   },
   cardActions: {
-   width: '100%',
-   display: 'flex',
-   justifyContent: 'center',
-   padding: 12,
+    width: "100%",
+    display: "flex",
+    justifyContent: "center",
+    padding: 12,
   },
   detailsContainer: {
-    display: 'flex',
+    display: "flex",
     padding: 0,
   },
   details: {
-    display: 'flex',
-    flexBasis: '50%',
-    justifyContent: 'center',
-    alignItems: 'center',
+    display: "flex",
+    flexBasis: "50%",
+    justifyContent: "center",
+    alignItems: "center",
     paddingTop: 18,
     paddingBottom: 10,
-    textAlign: 'center',
+    textAlign: "center",
   },
 });
 
@@ -58,7 +59,9 @@ const Auction = ({ auction, onBid, bidState }) => {
   const classes = useStyles();
   const amount = auction.highestBid.amount;
 
-  const pictureUrl = auction.pictureUrl ? auction.pictureUrl : 'placeholder.png';
+  const pictureUrl = auction.pictureUrl
+    ? auction.pictureUrl
+    : "placeholder.png";
 
   return (
     <Card className={classes.root}>
@@ -66,7 +69,7 @@ const Auction = ({ auction, onBid, bidState }) => {
         <CardHeader
           avatar={
             <Avatar aria-label="recipe" className={classes.avatar}>
-              {auction.seller[0].toUpperCase()}
+              {auction.seller?.[0].toUpperCase()}
             </Avatar>
           }
           title={auction.title}
@@ -78,10 +81,10 @@ const Auction = ({ auction, onBid, bidState }) => {
         />
         <CardContent className={classes.detailsContainer}>
           <div className={classes.details}>
-              <div>
-                <Value>{amount === 0 ? 'No bids' : `$${amount}`}</Value>
-                <Label>HIGHEST BID</Label>
-              </div>
+            <div>
+              <Value>{amount === 0 ? "No bids" : `$${amount}`}</Value>
+              <Label>HIGHEST BID</Label>
+            </div>
           </div>
           <div className={classes.details}>
             <div>
@@ -119,16 +122,15 @@ const Auction = ({ auction, onBid, bidState }) => {
       </CardActionArea>
       <CardActions>
         <div className={classes.cardActions}>
-          { (bidState === 'OWN_AUCTION' || bidState === 'HIGHEST_BIDDER') && (
-            <Button
-              disabled={true}
-              onClick={() => onBid()}
-            >
-              {bidState === 'OWN_AUCTION' ? 'This is your auction' : 'You are the highest bidder'}
+          {(bidState === "OWN_AUCTION" || bidState === "HIGHEST_BIDDER") && (
+            <Button disabled={true} onClick={() => onBid()}>
+              {bidState === "OWN_AUCTION"
+                ? "This is your auction"
+                : "You are the highest bidder"}
             </Button>
           )}
 
-          { bidState === 'CAN_BID' && (
+          {bidState === "CAN_BID" && (
             <Button
               variant="outlined"
               className={classes.bidButton}
@@ -137,7 +139,6 @@ const Auction = ({ auction, onBid, bidState }) => {
               Bid now!
             </Button>
           )}
-
         </div>
       </CardActions>
     </Card>
