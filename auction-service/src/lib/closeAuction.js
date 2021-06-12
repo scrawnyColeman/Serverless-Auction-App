@@ -1,6 +1,7 @@
 import AWS from "aws-sdk";
 
 const dynamodb = new AWS.DynamoDB.DocumentClient();
+const sqs = new AWS.SQS();
 
 export async function closeAuction(auction) {
   const params = {
@@ -15,7 +16,50 @@ export async function closeAuction(auction) {
     },
   };
 
-  const result = await dynamodb.update(params).promise();
+  await dynamodb.update(params).promise();
 
-  return result;
+  const {
+    title,
+    sellerEmail,
+    highestBid: { amount, bidder },
+  } = auction;
+
+  if (amount === 0 && bidder === "") {
+    const notifySeller = sqs
+      .sendMessage({
+        QueueUrl: process.env.MAIL_QUEUE_URL,
+        MessageBody: JSON.stringify({
+          subject: "Your item has not been sold",
+          recipient: sellerEmail,
+          body: `Unfortunately your item "${title}" has not been sold`,
+        }),
+      })
+      .promise();
+
+    return Promise.resolve(notifySeller);
+  }
+
+  const notifySeller = sqs
+    .sendMessage({
+      QueueUrl: process.env.MAIL_QUEUE_URL,
+      MessageBody: JSON.stringify({
+        subject: "Your item has been sold",
+        recipient: sellerEmail,
+        body: `Woohoo! Your item "${title}" has been sold for £${amount}`,
+      }),
+    })
+    .promise();
+
+  const notifyBidder = sqs
+    .sendMessage({
+      QueueUrl: process.env.MAIL_QUEUE_URL,
+      MessageBody: JSON.stringify({
+        subject: "You won an auction",
+        recipient: bidder,
+        body: `What a great deal! You got yourself a "${title}" for £${amount}`,
+      }),
+    })
+    .promise();
+
+  return Promise.all([notifyBidder, notifySeller]);
 }
